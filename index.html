@@ -200,13 +200,17 @@
       img.src = svg
 
       img.onload = function () {
-        var url = getBase64Image(img)
-        var a = document.createElement('a')
-        var click = new MouseEvent('click')
-        a.download = 'header.png'
-        a.setAttribute('href', url);
-        a.setAttribute('target', '_blank')
-        a.dispatchEvent(click)
+        try {
+          var url = getBase64Image(img)
+          var a = document.createElement('a')
+          var click = new MouseEvent('click')
+          a.download = 'header.png'
+          a.setAttribute('href', url);
+          a.setAttribute('target', '_blank')
+          a.dispatchEvent(click)
+        } catch (error) {
+          alert(error)
+        }
       }
     }, 1000)
   }
