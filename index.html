@@ -204,12 +204,10 @@
           var a = document.createElement('a')
           var click = new MouseEvent('click')
           a.download = 'header.png'
-          a.setAttribute('href', url);
-          alert(3)
+          a.setAttribute('href', 'www.baidu.com');
+          // a.setAttribute('href', url);
           a.setAttribute('target', '_blank')
-          alert(1)
           a.dispatchEvent(click)
-          alert(a.href)
         } catch (error) {
           alert(error)
         }
