@@ -198,12 +198,9 @@
               + new XMLSerializer().serializeToString(result).replace(/#/g, '%23').replace(/\n/g, '%0A')
               + '</foreignObject></svg>'
       img.src = svg
-      alert(0)
       img.onload = function () {
-        alert(21)
         try {
           var url = getBase64Image(img)
-          alert(2)
           var a = document.createElement('a')
           var click = new MouseEvent('click')
           a.download = 'header.png'
