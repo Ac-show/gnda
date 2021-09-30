@@ -104,7 +104,7 @@
   <!-- 删除图片 -->
   <div id="delete" class="button">删除</div>
   <!-- 下载图片 -->
-  <div id="download" class="button">下载</div>
+  <div id="download" class="button">点击合成头像</div>
   <!-- 例子 -->
   <!-- <div id="component"></div>
   <img src="./测试头像.jpeg" alt="" id="test"> -->
@@ -138,34 +138,7 @@
     }
   }
 
-  // 显示上传图片
-  var imgUrl = new FileReader()
-  imgUrl.onload = function () {
-    showImg.setAttribute('src', imgUrl.result)
-    addFlag(result)
-    result.style.display = 'block'
-  }
-
-  upload.onchange = function (e) { imgUrl.readAsDataURL(upload.files[0]) }
-
-  // canvas生成图片下载地址
-  var canvas = document.createElement('canvas')
-  var ctx = canvas.getContext('2d')
-
-  function getBase64Image(img) {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.clearRect(0, 0, img.width, img.height);
-    ctx.drawImage(img, 0, 0, img.width, img.height);
-    var ext = img.src.substring(img.src.lastIndexOf(".") + 1).toLowerCase();
-    var dataURL = canvas.toDataURL("image/" + ext);
-    return dataURL;
-  }
-
-  // 点击下载
-  var download = document.getElementById('download')
-  download.onclick = function () {
-    if (!showImg.getAttribute('src')) return
+  function handleFlagUrl() {
     // 处理国旗图片src --> base64
     var flag = result.getElementsByTagName('div')
     for (var i = 0; i < flag.length; i++) {
@@ -182,17 +155,48 @@
         }
       })(imgItem, image)
     }
+  }
+
+  // canvas绘制上传图片
+  var canvas = document.createElement('canvas')
+  var ctx = canvas.getContext('2d')
+  var imgUrl = new FileReader()
+
+  // 监听上传 
+  upload.onchange = function (e) {
+    imgUrl.readAsDataURL(upload.files[0])
+  }
+
+  imgUrl.onload = function () {
+    showImg.setAttribute('src', imgUrl.result)
+    addFlag(result)
+    result.style.display = 'block'
+  }
+
+  // canvas绘制图片方法
+  function draw(img) {
+    
+  }
+
+  // canvas生成图片下载地址
+  function getBase64Image(img) {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.clearRect(0, 0, img.width, img.height);
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+    var ext = img.src.substring(img.src.lastIndexOf(".") + 1).toLowerCase();
+    var dataURL = canvas.toDataURL("image/" + ext);
+    return dataURL;
+  }
+
+  // PC端点击下载
+  var download = document.getElementById('download')
+  download.onclick = function () {
+    if (!showImg.getAttribute('src')) return
+    handleFlagUrl()
     // 下载
     setTimeout(function () {
       var img = new Image()
-      // var svg = `
-      //   data:image/svg+xml;charset=utf-8,
-      //   <svg xmlns="http://www.w3.org/2000/svg" width="${result.offsetWidth}" height="${result.offsetHeight}">
-      //     <foreignObject x="0" y="0" width="100%" height="100%">
-      //       ${new XMLSerializer().serializeToString(result).replace(/#/g, '%23').replace(/\n/g, '%0A')}
-      //     </foreignObject>
-      //   </svg>
-      // `
       var svg = 'data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="' + result.offsetWidth + '" height="'
               + result.offsetHeight + '"><foreignObject x="0" y="0" width="100%" height="100%">'
               + new XMLSerializer().serializeToString(result).replace(/#/g, '%23').replace(/\n/g, '%0A')
@@ -201,18 +205,24 @@
       img.onload = function () {
         try {
           var url = getBase64Image(img)
+          // 移动端生成图片
+          showImg.setAttribute('src', url)
+          result.innerHTML = ''
+          result.appendChild(showImg)
+          alert('图片合成成功')
+
+          // pc端自动下载
           var a = document.createElement('a')
           var click = new MouseEvent('click')
           a.download = 'header.png'
-          a.setAttribute('href', 'www.baidu.com');
-          // a.setAttribute('href', url);
+          a.setAttribute('href', url);
           a.setAttribute('target', '_blank')
           a.dispatchEvent(click)
         } catch (error) {
           alert(error)
         }
       }
-    }, 1000)
+    }, 500)
   }
 
   // 点击删除
