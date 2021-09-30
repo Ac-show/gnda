@@ -111,21 +111,21 @@
 </body>
 <script>
   // 上传图片按钮
-  let upload = document.getElementById('upload')
-  let showImg = document.getElementById('showImg')
-  let result = document.getElementById('result')
+  var upload = document.getElementById('upload')
+  var showImg = document.getElementById('showImg')
+  var result = document.getElementById('result')
 
   result.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
 
   // 图片覆盖国旗
   function addFlag(DOM) {
-    for (let i = 1; i < 90; i++) {
-      let img = document.createElement('img')
-      img.setAttribute('src', './国旗.jpg')
-      img.style.height = '300px'
+    for (var i = 1; i < 90; i++) {
+      var imgFlag = document.createElement('img')
+      imgFlag.setAttribute('src', './国旗.jpg')
+      imgFlag.style.height = '300px'
 
-      let div = document.createElement('div')
-      div.appendChild(img)
+      var div = document.createElement('div')
+      div.appendChild(imgFlag)
 
       div.style.width = i * 3 + 'px'
       div.style.height = '300px'
@@ -139,18 +139,18 @@
   }
 
   // 显示上传图片
-  const imgUrl = new FileReader()
-  imgUrl.onload = () => {
+  var imgUrl = new FileReader()
+  imgUrl.onload = function () {
     showImg.setAttribute('src', imgUrl.result)
     addFlag(result)
     result.style.display = 'block'
   }
 
-  upload.onchange = (e) => imgUrl.readAsDataURL(upload.files[0])
+  upload.onchange = function (e) { imgUrl.readAsDataURL(upload.files[0]) }
 
   // canvas生成图片下载地址
-  let canvas = document.createElement('canvas')
-  let ctx = canvas.getContext('2d')
+  var canvas = document.createElement('canvas')
+  var ctx = canvas.getContext('2d')
 
   function getBase64Image(img) {
     canvas.width = img.width;
@@ -163,37 +163,45 @@
   }
 
   // 点击下载
-  let download = document.getElementById('download')
-  download.onclick = () => {
+  var download = document.getElementById('download')
+  download.onclick = function () {
     if (!showImg.getAttribute('src')) return
     // 处理国旗图片src --> base64
-    let flag = result.getElementsByTagName('div')
-    for (let item of flag) {
-      let image = new Image();
-      let imgItem = item.getElementsByTagName('img')[0]
+    var flag = result.getElementsByTagName('div')
+    for (var i = 0; i < flag.length; i++) {
+      var item = flag[i]
+      var image = new Image();
+      var imgItem = item.getElementsByTagName('img')[0];
       image.src = imgItem.src;
       image.setAttribute('crossOrigin', 'anonymous');
+
       // 加载完成后
-      image.onload = function () {
-        imgItem.setAttribute('src', getBase64Image(image))
-      }
+      image.onload = (function (imgItem, image) {
+        return function () {
+          imgItem.setAttribute('src', getBase64Image(image))
+        }
+      })(imgItem, image)
     }
     // 下载
-    setTimeout(() => {
-      let img = new Image()
-      let svg = `
-      data:image/svg+xml;charset=utf-8,
-      <svg xmlns="http://www.w3.org/2000/svg" width="${result.offsetWidth}" height="${result.offsetHeight}">
-        <foreignObject x="0" y="0" width="100%" height="100%">
-          ${new XMLSerializer().serializeToString(result).replace(/#/g, '%23').replace(/\n/g, '%0A')}
-        </foreignObject>
-      </svg>
-    `
+    setTimeout(function () {
+      var img = new Image()
+      // var svg = `
+      //   data:image/svg+xml;charset=utf-8,
+      //   <svg xmlns="http://www.w3.org/2000/svg" width="${result.offsetWidth}" height="${result.offsetHeight}">
+      //     <foreignObject x="0" y="0" width="100%" height="100%">
+      //       ${new XMLSerializer().serializeToString(result).replace(/#/g, '%23').replace(/\n/g, '%0A')}
+      //     </foreignObject>
+      //   </svg>
+      // `
+      var svg = 'data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="' + result.offsetWidth + '" height="'
+              + result.offsetHeight + '"><foreignObject x="0" y="0" width="100%" height="100%">'
+              + new XMLSerializer().serializeToString(result).replace(/#/g, '%23').replace(/\n/g, '%0A')
+              + '</foreignObject></svg>'
       img.src = svg
 
-      img.onload = () => {
-        let url = getBase64Image(img)
-        let a = document.createElement('a')
+      img.onload = function () {
+        var url = getBase64Image(img)
+        var a = document.createElement('a')
         a.download = '123213.png'
         a.href = url
         document.body.appendChild(a)
@@ -204,8 +212,8 @@
   }
 
   // 点击删除
-  let del = document.getElementById('delete')
-  del.onclick = () => {
+  var del = document.getElementById('delete')
+  del.onclick = function () {
     showImg.setAttribute('src', '')
     result.style.display = 'none'
     result.innerHTML = ''
